@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Options : MonoBehaviour
+public static class Settings
 {
     //Sound
     //Graphic Quality
@@ -10,4 +10,7 @@ public class Options : MonoBehaviour
     //Zoom Speed
     //Pan Speed
     //Rotate Speed
+
+    public static float cameraSpeed = 4f;
+    public static float moveSpeed = .2f;
 }
