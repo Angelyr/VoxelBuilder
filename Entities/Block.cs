@@ -10,8 +10,10 @@ public class Block : MonoBehaviour
     //Inventory
     //Loaded from file
 
-    public void Create(Vector3 position)
+    public void Create(Vector3Int position)
     {
-        Instantiate(gameObject, position, Quaternion.identity);
+        if (!World.Empty(position)) return;
+        GameObject block = Instantiate(gameObject, position, Quaternion.identity);
+        World.Add(position, block);
     }
 }

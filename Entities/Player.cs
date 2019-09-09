@@ -43,8 +43,8 @@ public class Player : MonoBehaviour
         else if (Input.GetKey("s")) Move(Vector3.back);
         else if (Input.GetKey("a")) Move(Vector3.left);
         else if (Input.GetKey("d")) Move(Vector3.right);
-        else if (Input.GetKey("left shift")) Move(Vector3.up);
-        else if (Input.GetKey("left ctrl")) Move(Vector3.down);
+        else if (Input.GetKey("left shift")) Move(Vector3.down);
+        else if (Input.GetKey("space")) Move(Vector3.up);
         else Move(Vector3.zero);
 
 
@@ -55,7 +55,8 @@ public class Player : MonoBehaviour
     private void Place()
     {
         //check if area is selected then place a block there else place one in front of you
-        block.Create(Direction(Vector3.forward));
+        Vector3Int target = Vector3Int.RoundToInt(Direction(Vector3.forward));
+        block.Create(target);
 
     }
 
@@ -63,6 +64,13 @@ public class Player : MonoBehaviour
     {
         if (direction == Vector3.zero) return;
         Vector3 target = transform.position + camera.transform.TransformDirection(direction);
+
+        if (direction == Vector3.up || direction == Vector3.down)
+        {
+            target = transform.position + direction;
+        }
+
+
         transform.position = Vector3.MoveTowards(transform.position, target, Settings.moveSpeed);
     }
 
