@@ -35,6 +35,8 @@ public class Player : MonoBehaviour
         else if (Input.GetKey("s")) Move(Vector3.back);
         else if (Input.GetKey("a")) Move(Vector3.left);
         else if (Input.GetKey("d")) Move(Vector3.right);
+        else if (Input.GetKey("left shift")) Move(Vector3.up);
+        else if (Input.GetKey("left ctrl")) Move(Vector3.down);
         else Move(Vector3.zero);
         
     }
