@@ -16,11 +16,16 @@ public class Player : MonoBehaviour
 
     private new Camera camera;
     private View view;
+    private Block block;
+    
+    //MonoBehavior
 
     private void Awake()
     {
         view = transform.Find("Camera").GetComponent<View>();
         camera = transform.Find("Camera").GetComponent<Camera>();
+        block = Resources.Load<GameObject>("Block").GetComponent<Block>();
+        Cursor.lockState = CursorLockMode.Locked;
     }
 
     private void Update()
@@ -28,6 +33,9 @@ public class Player : MonoBehaviour
         view.FollowMouse();
         Inputs();
     }
+
+
+    //Private 
 
     private void Inputs()
     {
@@ -38,7 +46,17 @@ public class Player : MonoBehaviour
         else if (Input.GetKey("left shift")) Move(Vector3.up);
         else if (Input.GetKey("left ctrl")) Move(Vector3.down);
         else Move(Vector3.zero);
+
+
+        if (Input.GetMouseButton(0)) Place();
         
+    }
+
+    private void Place()
+    {
+        //check if area is selected then place a block there else place one in front of you
+        block.Create(Direction(Vector3.forward));
+
     }
 
     private void Move(Vector3 direction)
@@ -48,8 +66,9 @@ public class Player : MonoBehaviour
         transform.position = Vector3.MoveTowards(transform.position, target, Settings.moveSpeed);
     }
 
-    private void PointCamera()
+    private Vector3 Direction(Vector3 direction)
     {
-
+        Vector3 target = transform.position + camera.transform.TransformDirection(direction);
+        return Vector3.MoveTowards(transform.position, target, 2);
     }
 }

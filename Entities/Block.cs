@@ -9,4 +9,9 @@ public class Block : MonoBehaviour
     //Placed
     //Inventory
     //Loaded from file
+
+    public void Create(Vector3 position)
+    {
+        Instantiate(gameObject, position, Quaternion.identity);
+    }
 }
