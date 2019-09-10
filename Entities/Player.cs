@@ -17,6 +17,7 @@ public class Player : MonoBehaviour
     private new Camera camera;
     private View view;
     private Block block;
+    private Inventory inventory;
     
     //MonoBehavior
 
@@ -26,6 +27,8 @@ public class Player : MonoBehaviour
         camera = transform.Find("Camera").GetComponent<Camera>();
         block = Resources.Load<GameObject>("Block").GetComponent<Block>();
         Cursor.lockState = CursorLockMode.Locked;
+
+        inventory = transform.Find("Canvas/InventoryBtn").GetComponent<Inventory>();
     }
 
     private void Update()
@@ -49,7 +52,7 @@ public class Player : MonoBehaviour
 
 
         if (Input.GetMouseButtonDown(0)) Place();
-        
+        if (Input.GetKeyDown("i")) inventory.Toggle();
     }
 
     private void Place()
