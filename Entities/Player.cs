@@ -48,16 +48,15 @@ public class Player : MonoBehaviour
         else Move(Vector3.zero);
 
 
-        if (Input.GetMouseButton(0)) Place();
+        if (Input.GetMouseButtonDown(0)) Place();
         
     }
 
     private void Place()
     {
         //check if area is selected then place a block there else place one in front of you
-        Vector3Int target = Vector3Int.RoundToInt(Direction(Vector3.forward));
+        Vector3Int target = Target();
         block.Create(target);
-
     }
 
     private void Move(Vector3 direction)
@@ -74,9 +73,26 @@ public class Player : MonoBehaviour
         transform.position = Vector3.MoveTowards(transform.position, target, Settings.moveSpeed);
     }
 
-    private Vector3 Direction(Vector3 direction)
+    private Vector3Int Target()
     {
-        Vector3 target = transform.position + camera.transform.TransformDirection(direction);
-        return Vector3.MoveTowards(transform.position, target, 2);
+        Vector3 position = transform.position;
+        Vector3 prevPosition = transform.position;
+        float dist = 0f;
+        while (World.Empty(Vector3Int.RoundToInt(position)))
+        {
+            prevPosition = position;
+            Vector3 target = position + camera.transform.TransformDirection(Vector3.forward);
+            position = Vector3.MoveTowards(position, target, .1f);
+            dist += .1f;
+            if (dist >= Settings.range) return Vector3Int.RoundToInt(Direction(Vector3.forward, 2));
+        }
+
+        return Vector3Int.RoundToInt(prevPosition);
+    }
+
+    private Vector3 Direction(Vector3 direction, float dist)
+    {
+        Vector3 target = transform.position + camera.transform.TransformDirection(direction*dist);
+        return Vector3.MoveTowards(transform.position, target, dist);
     }
 }
