@@ -13,7 +13,7 @@ public class Block : MonoBehaviour
     public void Create(Vector3Int position)
     {
         if (!World.Empty(position)) return;
-        GameObject block = Instantiate(gameObject, position, Quaternion.identity);
+        GameObject block = Instantiate(gameObject, position, Quaternion.identity, References.worldContainer.transform);
         World.Add(position, block);
     }
 }
