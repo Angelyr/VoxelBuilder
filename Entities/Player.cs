@@ -18,6 +18,7 @@ public class Player : MonoBehaviour
     private View view;
     private Block block;
     private Inventory inventory;
+    private bool lockedCamera;
     
     //MonoBehavior
 
@@ -26,14 +27,14 @@ public class Player : MonoBehaviour
         view = transform.Find("Camera").GetComponent<View>();
         camera = transform.Find("Camera").GetComponent<Camera>();
         block = Resources.Load<GameObject>("Block").GetComponent<Block>();
-        Cursor.lockState = CursorLockMode.Locked;
-
         inventory = transform.Find("Canvas/InventoryBtn").GetComponent<Inventory>();
+
+        LockCamera();
     }
 
     private void Update()
     {
-        view.FollowMouse();
+        if(lockedCamera) view.FollowMouse();
         Inputs();
     }
 
@@ -52,12 +53,17 @@ public class Player : MonoBehaviour
 
 
         if (Input.GetMouseButtonDown(0)) Place();
-        if (Input.GetKeyDown("i")) inventory.Toggle();
+        if (Input.GetKeyDown("i"))
+        {
+            inventory.Toggle();
+            if (inventory.Active()) UnlockCamera();
+            else LockCamera();
+        }
     }
 
     private void Place()
     {
-        //check if area is selected then place a block there else place one in front of you
+        if (!lockedCamera) return;
         Vector3Int target = Target();
         block.Create(target);
     }
@@ -98,4 +104,18 @@ public class Player : MonoBehaviour
         Vector3 target = transform.position + camera.transform.TransformDirection(direction*dist);
         return Vector3.MoveTowards(transform.position, target, dist);
     }
+
+    //Public
+    private void UnlockCamera()
+    {
+        Cursor.lockState = CursorLockMode.None;
+        lockedCamera = false;
+    }
+
+    private void LockCamera()
+    {
+        Cursor.lockState = CursorLockMode.Locked;
+        lockedCamera = true;
+    }
+
 }

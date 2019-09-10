@@ -17,12 +17,13 @@ public class Inventory : MonoBehaviour
         invetoryBtn.onClick.AddListener(Toggle);
     }
 
-
-
-
-
     public void Toggle()
     {
         inventoryUI.SetActive(!inventoryUI.activeSelf);
+    }
+
+    public bool Active()
+    {
+        return inventoryUI.activeSelf;
     }
 }
