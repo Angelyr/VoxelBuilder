@@ -9,6 +9,9 @@ public class Inventory : MonoBehaviour
 
     private GameObject inventoryUI;
     private Button invetoryBtn;
+    private Slot selected;
+
+    //Monobehavior
 
     private void Awake()
     {
@@ -16,6 +19,8 @@ public class Inventory : MonoBehaviour
         invetoryBtn = GetComponent<Button>();
         invetoryBtn.onClick.AddListener(Toggle);
     }
+
+    //Public
 
     public void Toggle()
     {
@@ -25,5 +30,11 @@ public class Inventory : MonoBehaviour
     public bool Active()
     {
         return inventoryUI.activeSelf;
+    }
+
+    public void Select(Slot selected)
+    {
+        if (this.selected != null) this.selected.DeSelect();
+        this.selected = selected;
     }
 }
