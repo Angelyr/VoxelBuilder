@@ -19,6 +19,8 @@ public class Player : MonoBehaviour
     private Inventory inventory;
     private bool lockedCamera;
     private bool airTargetMode = true;
+    private bool extendMode = true;
+    private Vector3Int lastDirection;
     
     //MonoBehavior
 
@@ -60,6 +62,7 @@ public class Player : MonoBehaviour
             else LockCamera();
         }
         if (Input.GetKeyDown("z")) ToggleAirTarget();
+        if (Input.GetKeyDown("x")) ToggleExtend();
     }
 
     private void Place()
@@ -67,8 +70,10 @@ public class Player : MonoBehaviour
         if (!lockedCamera) return;
         Vector3Int target = TargetAir();
 
-        if (target == Vector3Int.RoundToInt(Direction(Vector3.forward, 2)) && !airTargetMode) return; 
+        if (target == Vector3Int.RoundToInt(Direction(Vector3.forward, 2)) && !airTargetMode) return;
         inventory.UseSelected(TargetAir());
+        
+        if (!World.Empty(target) && extendMode) World.Get(target).Extend(lastDirection);
     }
 
     private void Delete()
@@ -101,9 +106,12 @@ public class Player : MonoBehaviour
             Vector3 target = position + camera.transform.TransformDirection(Vector3.forward);
             position = Vector3.MoveTowards(position, target, .1f);
             dist += .1f;
+
+      
             if (dist >= Settings.range) return Vector3Int.RoundToInt(Direction(Vector3.forward, 2));
         }
 
+        lastDirection = Vector3Int.RoundToInt(position) - Vector3Int.RoundToInt(prevPosition);
         return Vector3Int.RoundToInt(prevPosition);
     }
 
@@ -147,4 +155,8 @@ public class Player : MonoBehaviour
         airTargetMode = !airTargetMode;
     }
 
+    public void ToggleExtend()
+    {
+        extendMode = !extendMode;
+    }
 }
