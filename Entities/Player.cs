@@ -53,6 +53,7 @@ public class Player : MonoBehaviour
 
 
         if (Input.GetMouseButtonDown(0)) Place();
+        if (Input.GetMouseButtonDown(1)) Delete();
         if (Input.GetKeyDown("i"))
         {
             inventory.Toggle();
@@ -64,8 +65,12 @@ public class Player : MonoBehaviour
     private void Place()
     {
         if (!lockedCamera) return;
-        Vector3Int target = Target();
-        inventory.UseSelected(target);
+        inventory.UseSelected(TargetAir());
+    }
+
+    private void Delete()
+    {
+        World.Remove(TargetBlock());
     }
 
     private void Move(Vector3 direction)
@@ -82,7 +87,7 @@ public class Player : MonoBehaviour
         transform.position = Vector3.MoveTowards(transform.position, target, Settings.moveSpeed);
     }
 
-    private Vector3Int Target()
+    private Vector3Int TargetAir()
     {
         Vector3 position = transform.position;
         Vector3 prevPosition = transform.position;
@@ -97,6 +102,21 @@ public class Player : MonoBehaviour
         }
 
         return Vector3Int.RoundToInt(prevPosition);
+    }
+
+    private Vector3Int TargetBlock()
+    {
+        Vector3 position = transform.position;
+        float dist = 0f;
+        while (World.Empty(Vector3Int.RoundToInt(position)))
+        {
+            Vector3 target = position + camera.transform.TransformDirection(Vector3.forward);
+            position = Vector3.MoveTowards(position, target, .1f);
+            dist += .1f;
+            if (dist >= Settings.range) return Vector3Int.RoundToInt(Direction(Vector3.forward, 2));
+        }
+
+        return Vector3Int.RoundToInt(position);
     }
 
     private Vector3 Direction(Vector3 direction, float dist)

@@ -17,7 +17,7 @@ public class Slot : MonoBehaviour
     {
         btn = GetComponent<Button>();
         inventory = transform.parent.parent.GetComponent<Inventory>();
-        image = transform.Find("Image").GetComponent<Image>();
+        image = GetComponent<Image>();
         color = image.color;
         btn.onClick.AddListener(Select);
     }

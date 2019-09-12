@@ -26,6 +26,13 @@ public class World : MonoBehaviour
         return true;
     }
 
+    public static void Remove(Vector3Int position)
+    {
+        if (!world.ContainsKey(position)) return;
+        Destroy(world[position]);
+        world.Remove(position);
+    }
+
     public static bool Empty(Vector3Int position)
     {
         return !world.ContainsKey(position);
