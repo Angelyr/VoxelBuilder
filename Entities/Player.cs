@@ -16,9 +16,9 @@ public class Player : MonoBehaviour
 
     private new Camera camera;
     private View view;
-    //private Block block;
     private Inventory inventory;
     private bool lockedCamera;
+    private bool airTargetMode = true;
     
     //MonoBehavior
 
@@ -26,8 +26,7 @@ public class Player : MonoBehaviour
     {
         view = transform.Find("Camera").GetComponent<View>();
         camera = transform.Find("Camera").GetComponent<Camera>();
-        //block = Resources.Load<GameObject>("Block").GetComponent<Block>();
-        inventory = transform.Find("Canvas/InventoryBtn").GetComponent<Inventory>();
+        inventory = transform.Find("Canvas/Tools/InventoryBtn").GetComponent<Inventory>();
 
         LockCamera();
     }
@@ -60,11 +59,15 @@ public class Player : MonoBehaviour
             if (inventory.Active()) UnlockCamera();
             else LockCamera();
         }
+        if (Input.GetKeyDown("z")) ToggleAirTarget();
     }
 
     private void Place()
     {
         if (!lockedCamera) return;
+        Vector3Int target = TargetAir();
+
+        if (target == Vector3Int.RoundToInt(Direction(Vector3.forward, 2)) && !airTargetMode) return; 
         inventory.UseSelected(TargetAir());
     }
 
@@ -125,7 +128,6 @@ public class Player : MonoBehaviour
         return Vector3.MoveTowards(transform.position, target, dist);
     }
 
-    //Public
     private void UnlockCamera()
     {
         Cursor.lockState = CursorLockMode.None;
@@ -136,6 +138,13 @@ public class Player : MonoBehaviour
     {
         Cursor.lockState = CursorLockMode.Locked;
         lockedCamera = true;
+    }
+
+    //Public
+
+    public void ToggleAirTarget()
+    {
+        airTargetMode = !airTargetMode;
     }
 
 }
