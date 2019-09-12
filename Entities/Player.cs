@@ -16,7 +16,7 @@ public class Player : MonoBehaviour
 
     private new Camera camera;
     private View view;
-    private Block block;
+    //private Block block;
     private Inventory inventory;
     private bool lockedCamera;
     
@@ -26,7 +26,7 @@ public class Player : MonoBehaviour
     {
         view = transform.Find("Camera").GetComponent<View>();
         camera = transform.Find("Camera").GetComponent<Camera>();
-        block = Resources.Load<GameObject>("Block").GetComponent<Block>();
+        //block = Resources.Load<GameObject>("Block").GetComponent<Block>();
         inventory = transform.Find("Canvas/InventoryBtn").GetComponent<Inventory>();
 
         LockCamera();
@@ -65,7 +65,7 @@ public class Player : MonoBehaviour
     {
         if (!lockedCamera) return;
         Vector3Int target = Target();
-        block.Create(target);
+        inventory.UseSelected(target);
     }
 
     private void Move(Vector3 direction)

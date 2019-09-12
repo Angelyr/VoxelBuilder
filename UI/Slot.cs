@@ -42,6 +42,11 @@ public class Slot : MonoBehaviour
         transform.Find("Image").GetComponent<Image>().sprite = ConvertToSprite(AssetPreview.GetAssetPreview(block.gameObject));
     }
 
+    public void Use(Vector3Int target)
+    {
+        block.Use(target);
+    }
+
     private static Sprite ConvertToSprite(Texture2D texture)
     {
         return Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), Vector2.zero);

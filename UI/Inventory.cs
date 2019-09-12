@@ -55,6 +55,11 @@ public class Inventory : MonoBehaviour
         this.selected = selected;
     }
 
+    public void UseSelected(Vector3Int target)
+    {
+        if (selected == null) return;
+        selected.Use(target);
+    }
 
     
 }

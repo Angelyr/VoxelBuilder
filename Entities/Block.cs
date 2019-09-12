@@ -35,7 +35,7 @@ public class Block : MonoBehaviour
 
     //Public
 
-    public void Create(Vector3Int position)
+    public void Use(Vector3Int position)
     {
         if (!World.Empty(position)) return;
         GameObject block = Instantiate(gameObject, position, Quaternion.identity, References.worldContainer.transform);
