@@ -1,7 +1,11 @@
 ﻿using UnityEngine;
 using System.Collections;
 using UnityEngine.UI;
+using System;
+using System.IO;
+using System.Collections.Generic;
 
+[Serializable]
 public class Inventory : MonoBehaviour
 {
     //Blocks
@@ -18,6 +22,13 @@ public class Inventory : MonoBehaviour
         inventoryUI = transform.Find("Inventory").gameObject;
         invetoryBtn = GetComponent<Button>();
         invetoryBtn.onClick.AddListener(Toggle);
+        Load();
+    }
+
+    //Private
+
+    private void Load()
+    {
     }
 
     //Public
@@ -37,4 +48,7 @@ public class Inventory : MonoBehaviour
         if (this.selected != null) this.selected.DeSelect();
         this.selected = selected;
     }
+
+
+    
 }

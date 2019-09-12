@@ -1,7 +1,9 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 
+[Serializable]
 public class Block : MonoBehaviour
 {
     //Texture
@@ -9,6 +11,29 @@ public class Block : MonoBehaviour
     //Placed
     //Inventory
     //Loaded from file
+
+    protected MeshRenderer top;
+    protected MeshRenderer bottom;
+    protected MeshRenderer left;
+    protected MeshRenderer right;
+    protected MeshRenderer front;
+    protected MeshRenderer back;
+
+    //MonoBehavior
+
+    protected virtual void Awake()
+    {
+        top = transform.Find("Top").GetComponent<MeshRenderer>();
+        bottom = transform.Find("Bottom").GetComponent<MeshRenderer>();
+        left = transform.Find("Left").GetComponent<MeshRenderer>();
+        right = transform.Find("Right").GetComponent<MeshRenderer>();
+        front = transform.Find("Front").GetComponent<MeshRenderer>();
+        back = transform.Find("Back").GetComponent<MeshRenderer>();
+    }
+
+    //Private
+
+    //Public
 
     public void Create(Vector3Int position)
     {
