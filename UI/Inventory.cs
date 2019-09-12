@@ -14,7 +14,7 @@ public class Inventory : MonoBehaviour
     private GameObject inventoryUI;
     private Button invetoryBtn;
     private Slot selected;
-
+   
     //Monobehavior
 
     private void Awake()
@@ -29,6 +29,12 @@ public class Inventory : MonoBehaviour
 
     private void Load()
     {
+        GameObject[] blocks = Resources.LoadAll<GameObject>("Blocks");
+        for(int i=0; i<blocks.Length; i++)
+        {
+            inventoryUI.transform.GetChild(i).GetComponent<Slot>().Add(blocks[i].GetComponent<Block>());
+        }
+
     }
 
     //Public
