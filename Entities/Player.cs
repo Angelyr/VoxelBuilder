@@ -78,7 +78,12 @@ public class Player : MonoBehaviour
 
     private void Delete()
     {
-        World.Remove(TargetBlock());
+        Vector3Int target = TargetBlock();
+        if(!World.Empty(target) && extendMode)
+        {
+            World.Get(target).Subtract(lastDirection, null);
+        }
+        else World.Remove(TargetBlock());
     }
 
     private void Move(Vector3 direction)
@@ -118,15 +123,18 @@ public class Player : MonoBehaviour
     private Vector3Int TargetBlock()
     {
         Vector3 position = transform.position;
+        Vector3 prevPosition = transform.position;
         float dist = 0f;
         while (World.Empty(Vector3Int.RoundToInt(position)))
         {
+            prevPosition = position;
             Vector3 target = position + camera.transform.TransformDirection(Vector3.forward);
             position = Vector3.MoveTowards(position, target, .1f);
             dist += .1f;
             if (dist >= Settings.range) return Vector3Int.RoundToInt(Direction(Vector3.forward, 2));
         }
 
+        lastDirection = Vector3Int.RoundToInt(position) - Vector3Int.RoundToInt(prevPosition);
         return Vector3Int.RoundToInt(position);
     }
 
