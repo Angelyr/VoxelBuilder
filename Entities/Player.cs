@@ -40,7 +40,6 @@ public class Player : MonoBehaviour
     {
         if (lockedCursor) view.Move(architectMode);
         Inputs();
-        //Rotate();
         Move(direction);
     }
 
@@ -55,6 +54,7 @@ public class Player : MonoBehaviour
         InputDirection("d", Vector3.right);
         InputDirection("space", Vector3.up);
         InputDirection("left shift", Vector3.down);
+        MouseDirection();
 
         if (Input.GetMouseButtonDown(0)) Place();
         if (Input.GetMouseButtonDown(1)) Delete();
@@ -75,6 +75,24 @@ public class Player : MonoBehaviour
     {
         if (Input.GetKeyDown(key)) this.direction += direction;
         if (Input.GetKeyUp(key)) this.direction -= direction;
+        if (!Input.anyKey) this.direction = Vector3.zero;
+    }
+
+    private void MouseDirection()
+    {
+        if (Input.GetMouseButtonDown(2))
+        {
+            prevMouse = camera.ScreenToViewportPoint(Input.mousePosition);
+        }
+        if (Input.GetMouseButton(2))
+        {
+            Vector3 mouse = camera.ScreenToViewportPoint(Input.mousePosition);
+            direction = (prevMouse - mouse) * 100;
+        }
+        if (Input.GetMouseButtonUp(2))
+        {
+            direction = Vector3.zero;
+        }
     }
 
     private void Place()
@@ -105,22 +123,13 @@ public class Player : MonoBehaviour
         direction.y = 0;
         Vector3 target = transform.position + camera.transform.TransformDirection(direction);
         target.y = transform.position.y + up;
-        
 
+        float speed = 0f;
 
-        transform.position = Vector3.MoveTowards(transform.position, target, Settings.moveSpeed);
-    }
+        if (architectMode) speed = Settings.dragSpeed;
+        else speed = Settings.moveSpeed;
 
-    private void Rotate()
-    {
-        if (Input.GetMouseButtonDown(2))
-        {
-           
-        }
-        if (Input.GetMouseButton(2))
-        {
-            Move(Vector3.right);
-        }
+        transform.position = Vector3.MoveTowards(transform.position, target, speed);
     }
 
     private Vector3Int TargetAir()

@@ -13,6 +13,7 @@ public static class Settings
 
     public static float cameraSpeed = 4f;
     public static float moveSpeed = .2f;
+    public static float dragSpeed = .5f;
     public static int range = 100;
     public static float scrollSpeed = .2f;
 }
