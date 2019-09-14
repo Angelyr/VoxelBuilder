@@ -20,6 +20,7 @@ public class Player : MonoBehaviour
     private bool lockedCamera;
     private bool airTargetMode = true;
     private bool extendMode = true;
+    private bool architectMode = false;
     private Vector3Int lastDirection;
     
     //MonoBehavior
@@ -35,7 +36,7 @@ public class Player : MonoBehaviour
 
     private void Update()
     {
-        if(lockedCamera) view.FollowMouse();
+        if (lockedCamera) view.Move(architectMode);
         Inputs();
     }
 
@@ -63,6 +64,7 @@ public class Player : MonoBehaviour
         }
         if (Input.GetKeyDown("z")) ToggleAirTarget();
         if (Input.GetKeyDown("x")) ToggleExtend();
+        if (Input.GetKeyDown("c")) ToggleArchitect();
     }
 
     private void Place()
@@ -166,5 +168,12 @@ public class Player : MonoBehaviour
     public void ToggleExtend()
     {
         extendMode = !extendMode;
+    }
+
+    public void ToggleArchitect()
+    {
+        architectMode = !architectMode;
+        if (architectMode) Cursor.lockState = CursorLockMode.None;
+        else Cursor.lockState = CursorLockMode.Locked;
     }
 }
