@@ -65,6 +65,8 @@ public class Player : MonoBehaviour
         if (Input.GetKeyDown("z")) ToggleAirTarget();
         if (Input.GetKeyDown("x")) ToggleExtend();
         if (Input.GetKeyDown("c")) ToggleArchitect();
+
+        
     }
 
     private void Place()
@@ -110,7 +112,7 @@ public class Player : MonoBehaviour
         while (World.Empty(Vector3Int.RoundToInt(position)))
         {
             prevPosition = position;
-            Vector3 target = position + camera.transform.TransformDirection(Vector3.forward);
+            Vector3 target = position + Target();
             position = Vector3.MoveTowards(position, target, .1f);
             dist += .1f;
 
@@ -130,7 +132,7 @@ public class Player : MonoBehaviour
         while (World.Empty(Vector3Int.RoundToInt(position)))
         {
             prevPosition = position;
-            Vector3 target = position + camera.transform.TransformDirection(Vector3.forward);
+            Vector3 target = position + Target();
             position = Vector3.MoveTowards(position, target, .1f);
             dist += .1f;
             if (dist >= Settings.range) return Vector3Int.RoundToInt(Direction(Vector3.forward, 2));
@@ -156,6 +158,20 @@ public class Player : MonoBehaviour
     {
         Cursor.lockState = CursorLockMode.Locked;
         lockedCamera = true;
+    }
+
+    private Vector3 Target()
+    {
+        Vector3 target = camera.transform.TransformDirection(Vector3.forward);
+
+
+        if (architectMode)
+        {
+            Ray direction = camera.ScreenPointToRay(Input.mousePosition);
+            return direction.direction;
+        }
+        
+        return target;
     }
 
     //Public
