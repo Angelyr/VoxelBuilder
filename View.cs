@@ -12,18 +12,16 @@ public class View : MonoBehaviour
     private float yaw = 0f;
     private float pitch = 0f;
     private Vector3Int target = Vector3Int.zero;
+    
+    //Monobehavior
 
     private void Awake()
     {
         cam = GetComponent<Camera>();
     }
-
-    public void Move(bool architect)
-    {
-        if (architect) Rotate();
-        else FollowMouse();
-    }
     
+    //Private
+
     private void FollowMouse()
     {
         yaw += Settings.cameraSpeed * Input.GetAxis("Mouse X");
@@ -32,9 +30,28 @@ public class View : MonoBehaviour
         transform.eulerAngles = new Vector3(pitch, yaw, 0.0f);
     }
 
-    private void Rotate()
+    private void LookAtTarget()
     {
-        //transform.Translate(Vector3.right * Time.deltaTime);
         transform.LookAt(target);
+    }
+
+    
+
+    private void Pan()
+    {
+
+    }
+
+    //Public
+
+    public void Move(bool architect)
+    {
+        if (architect) LookAtTarget();
+        else FollowMouse();
+    }
+
+    public Vector3Int Target()
+    {
+        return target;
     }
 }

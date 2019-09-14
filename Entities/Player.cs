@@ -17,11 +17,13 @@ public class Player : MonoBehaviour
     private new Camera camera;
     private View view;
     private Inventory inventory;
-    private bool lockedCamera;
+    private bool lockedCursor;
     private bool airTargetMode = true;
     private bool extendMode = true;
     private bool architectMode = false;
+    private Vector3 direction = Vector3.zero;
     private Vector3Int lastDirection;
+    private Vector3 prevMouse;
     
     //MonoBehavior
 
@@ -31,13 +33,15 @@ public class Player : MonoBehaviour
         camera = transform.Find("Camera").GetComponent<Camera>();
         inventory = transform.Find("Canvas/Tools/InventoryBtn").GetComponent<Inventory>();
 
-        LockCamera();
+        LockCursor();
     }
 
     private void Update()
     {
-        if (lockedCamera) view.Move(architectMode);
+        if (lockedCursor) view.Move(architectMode);
         Inputs();
+        //Rotate();
+        Move(direction);
     }
 
 
@@ -45,22 +49,20 @@ public class Player : MonoBehaviour
 
     private void Inputs()
     {
-        if (Input.GetKey("w")) Move(Vector3.forward);
-        else if (Input.GetKey("s")) Move(Vector3.back);
-        else if (Input.GetKey("a")) Move(Vector3.left);
-        else if (Input.GetKey("d")) Move(Vector3.right);
-        else if (Input.GetKey("left shift")) Move(Vector3.down);
-        else if (Input.GetKey("space")) Move(Vector3.up);
-        else Move(Vector3.zero);
-
+        InputDirection("w", Vector3.forward);
+        InputDirection("s", Vector3.back);
+        InputDirection("a", Vector3.left);
+        InputDirection("d", Vector3.right);
+        InputDirection("space", Vector3.up);
+        InputDirection("left shift", Vector3.down);
 
         if (Input.GetMouseButtonDown(0)) Place();
         if (Input.GetMouseButtonDown(1)) Delete();
         if (Input.GetKeyDown("i"))
         {
             inventory.Toggle();
-            if (inventory.Active()) UnlockCamera();
-            else LockCamera();
+            if (inventory.Active()) UnlockCursor();
+            else LockCursor();
         }
         if (Input.GetKeyDown("z")) ToggleAirTarget();
         if (Input.GetKeyDown("x")) ToggleExtend();
@@ -69,9 +71,15 @@ public class Player : MonoBehaviour
         
     }
 
+    private void InputDirection(string key, Vector3 direction)
+    {
+        if (Input.GetKeyDown(key)) this.direction += direction;
+        if (Input.GetKeyUp(key)) this.direction -= direction;
+    }
+
     private void Place()
     {
-        if (!lockedCamera) return;
+        if (!lockedCursor) return;
         Vector3Int target = TargetAir();
 
         if (target == Vector3Int.RoundToInt(Direction(Vector3.forward, 2)) && !airTargetMode) return;
@@ -93,15 +101,26 @@ public class Player : MonoBehaviour
     private void Move(Vector3 direction)
     {
         if (direction == Vector3.zero) return;
+        float up = direction.y;
+        direction.y = 0;
         Vector3 target = transform.position + camera.transform.TransformDirection(direction);
-
-        if (direction == Vector3.up || direction == Vector3.down)
-        {
-            target = transform.position + direction;
-        }
+        target.y = transform.position.y + up;
+        
 
 
         transform.position = Vector3.MoveTowards(transform.position, target, Settings.moveSpeed);
+    }
+
+    private void Rotate()
+    {
+        if (Input.GetMouseButtonDown(2))
+        {
+           
+        }
+        if (Input.GetMouseButton(2))
+        {
+            Move(Vector3.right);
+        }
     }
 
     private Vector3Int TargetAir()
@@ -148,16 +167,16 @@ public class Player : MonoBehaviour
         return Vector3.MoveTowards(transform.position, target, dist);
     }
 
-    private void UnlockCamera()
+    private void UnlockCursor()
     {
         Cursor.lockState = CursorLockMode.None;
-        lockedCamera = false;
+        lockedCursor = false;
     }
 
-    private void LockCamera()
+    private void LockCursor()
     {
         Cursor.lockState = CursorLockMode.Locked;
-        lockedCamera = true;
+        lockedCursor = true;
     }
 
     private Vector3 Target()
