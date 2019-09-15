@@ -55,6 +55,7 @@ public class Player : MonoBehaviour
         InputDirection("space", Vector3.up);
         InputDirection("left shift", Vector3.down);
         MouseDirection();
+        Zoom();
 
         if (Input.GetMouseButtonDown(0)) Place();
         if (Input.GetMouseButtonDown(1)) Delete();
@@ -76,6 +77,13 @@ public class Player : MonoBehaviour
         if (Input.GetKeyDown(key)) this.direction += direction;
         if (Input.GetKeyUp(key)) this.direction -= direction;
         if (!Input.anyKey) this.direction = Vector3.zero;
+    }
+
+    private void Zoom()
+    {
+        float scroll = Input.GetAxis("Mouse ScrollWheel");
+        if (scroll > 0) direction += Vector3.forward;
+        if (scroll < 0) direction += Vector3.back;
     }
 
     private void MouseDirection()
