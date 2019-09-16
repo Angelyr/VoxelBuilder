@@ -148,7 +148,7 @@ public class Player : MonoBehaviour
         while (World.Empty(Vector3Int.RoundToInt(position)))
         {
             prevPosition = position;
-            Vector3 target = position + Target();
+            Vector3 target = position + Target(Vector3.forward);
             position = Vector3.MoveTowards(position, target, .1f);
             dist += .1f;
 
@@ -168,7 +168,7 @@ public class Player : MonoBehaviour
         while (World.Empty(Vector3Int.RoundToInt(position)))
         {
             prevPosition = position;
-            Vector3 target = position + Target();
+            Vector3 target = position + Target(Vector3.forward);
             position = Vector3.MoveTowards(position, target, .1f);
             dist += .1f;
             if (dist >= Settings.range) return Vector3Int.RoundToInt(Direction(Vector3.forward, 2));
@@ -196,15 +196,14 @@ public class Player : MonoBehaviour
         lockedCursor = true;
     }
 
-    private Vector3 Target()
+    private Vector3 Target(Vector3 targetDirection)
     {
-        Vector3 target = camera.transform.TransformDirection(Vector3.forward);
+        Vector3 target = camera.transform.TransformDirection(targetDirection);
 
 
         if (architectMode)
         {
-            Ray direction = camera.ScreenPointToRay(Input.mousePosition);
-            return direction.direction;
+            target = camera.ScreenPointToRay(Input.mousePosition).direction;
         }
         
         return target;

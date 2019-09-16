@@ -1,7 +1,9 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+[Serializable]
 public class World : MonoBehaviour
 {
     //Blocks
@@ -10,14 +12,24 @@ public class World : MonoBehaviour
     //Can be imported
     //Only one world
     //Players
+    
+    private static Dictionary<Position, Block> world;
 
-
-    private static Dictionary<Vector3Int, Block> world;
+    //Monobehavior
 
     private void Awake()
     {
-        world = new Dictionary<Vector3Int, Block>();
+        world = new Dictionary<Position, Block>();
     }
+    
+    
+
+    private void Load()
+    {
+
+    }
+
+    //Public
 
     public static bool Add(Vector3Int position, Block target)
     {
@@ -46,8 +58,6 @@ public class World : MonoBehaviour
                 }
             }
         }
-
-
         return area;
     }
 
@@ -61,5 +71,38 @@ public class World : MonoBehaviour
     public static bool Empty(Vector3Int position)
     {
         return !world.ContainsKey(position);
+    }
+
+    
+
+}
+
+[Serializable]
+public struct Position
+{
+    public int x;
+    public int y;
+    public int z;
+
+    public Position(int rX, int rY, int rZ)
+    {
+        x = rX;
+        y = rY;
+        z = rZ;
+    }
+
+    public override string ToString()
+    {
+        return String.Format("[{0}, {1}, {2}]", x, y, z);
+    }
+
+    public static implicit operator Vector3Int(Position rValue)
+    {
+        return new Vector3Int(rValue.x, rValue.y, rValue.z);
+    }
+
+    public static implicit operator Position(Vector3Int rValue)
+    {
+        return new Position(rValue.x, rValue.y, rValue.z);
     }
 }
