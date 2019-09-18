@@ -5,30 +5,29 @@ using UnityEngine;
 
 public class SaveFile
 {
-    public List<Position> world = new List<Position>();
+    public List<BlockSave> world = new List<BlockSave>();
 
-    public void Add(Vector3Int position)
+    public void Add(Vector3Int position, string name)
     {
-        world.Add(new Position(position));
+        world.Add(new BlockSave(position, name));
     }
 }
 
 [Serializable]
-public class Position
+public class BlockSave
 {
     public int x;
     public int y;
     public int z;
-    //BlockSave block;
+    public string name;
 
-    public Position(Vector3Int position)
+    public BlockSave(Vector3Int position, string name)
     {
         x = position.x;
         y = position.y;
         z = position.z;
+
+        this.name = name;
     }
 }
 
-public class BlockSave
-{
-}

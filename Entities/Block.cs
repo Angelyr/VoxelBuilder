@@ -43,6 +43,7 @@ public class Block : MonoBehaviour
     {
         if (!World.Empty(position)) return null;
         GameObject block = Instantiate(gameObject, position, Quaternion.identity, References.worldContainer.transform);
+        block.name = gameObject.name;
         World.Add(position, block.GetComponent<Block>());
         return block.GetComponent<Block>();
     }
