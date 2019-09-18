@@ -15,12 +15,18 @@ public class World : MonoBehaviour
     //Players
     
     private static Dictionary<Vector3Int, Block> world;
+    private static Block block;
 
     //Monobehavior
 
     private void Awake()
     {
         world = new Dictionary<Vector3Int, Block>();
+        block = Resources.Load<GameObject>("Block").GetComponent<Block>();
+    }
+
+    private void Start()
+    {
         Load();
     }
 
@@ -48,10 +54,21 @@ public class World : MonoBehaviour
     {
         string path = Application.persistentDataPath + "Save.json";
         string json = File.ReadAllText(path);
-        Debug.Log(json);
+
+        SaveFile save = JsonUtility.FromJson<SaveFile>(json);
+        foreach(Position position in save.world)
+        {
+            Create(position);
+        }
     }
 
     //Public
+
+    public static void Create(Position target)
+    {
+        Vector3Int position = new Vector3Int(target.x, target.y, target.z);
+        block.Use(position);
+    }
 
     public static bool Add(Vector3Int position, Block target)
     {
