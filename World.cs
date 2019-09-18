@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using UnityEngine;
 
 [Serializable]
@@ -13,20 +14,41 @@ public class World : MonoBehaviour
     //Only one world
     //Players
     
-    private static Dictionary<Position, Block> world;
+    private static Dictionary<Vector3Int, Block> world;
 
     //Monobehavior
 
     private void Awake()
     {
-        world = new Dictionary<Position, Block>();
+        world = new Dictionary<Vector3Int, Block>();
+        Load();
     }
-    
-    
+
+    private void OnApplicationQuit()
+    {
+        Save();
+    }
+
+    //Private
+
+    private void Save()
+    {
+        SaveFile save = new SaveFile();
+
+        foreach(KeyValuePair<Vector3Int, Block> block in world)
+        {
+            save.Add(block.Key);
+        }
+        string json = JsonUtility.ToJson(save);
+        string path = Application.persistentDataPath + "Save.json";
+        File.WriteAllText(path, json);
+    }
 
     private void Load()
     {
-
+        string path = Application.persistentDataPath + "Save.json";
+        string json = File.ReadAllText(path);
+        Debug.Log(json);
     }
 
     //Public
@@ -75,34 +97,4 @@ public class World : MonoBehaviour
 
     
 
-}
-
-[Serializable]
-public struct Position
-{
-    public int x;
-    public int y;
-    public int z;
-
-    public Position(int rX, int rY, int rZ)
-    {
-        x = rX;
-        y = rY;
-        z = rZ;
-    }
-
-    public override string ToString()
-    {
-        return String.Format("[{0}, {1}, {2}]", x, y, z);
-    }
-
-    public static implicit operator Vector3Int(Position rValue)
-    {
-        return new Vector3Int(rValue.x, rValue.y, rValue.z);
-    }
-
-    public static implicit operator Position(Vector3Int rValue)
-    {
-        return new Position(rValue.x, rValue.y, rValue.z);
-    }
 }

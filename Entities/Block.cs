@@ -12,9 +12,6 @@ public class Block : MonoBehaviour
     //Inventory
     //Loaded from file
 
-
-    [SerializeField] private Position position;
-
     protected MeshRenderer top;
     protected MeshRenderer bottom;
     protected MeshRenderer left;
@@ -34,23 +31,6 @@ public class Block : MonoBehaviour
         back = transform.Find("Back").GetComponent<MeshRenderer>();
     }
 
-    private void OnApplicationQuit()
-    {
-        Save();
-    }
-
-    //Private
-
-    private void Save()
-    {
-        string json = JsonUtility.ToJson(this);
-        //Debug.Log(json);
-    }
-
-    private void Load()
-    {
-
-    }
 
     //Public
 
@@ -63,7 +43,6 @@ public class Block : MonoBehaviour
     {
         if (!World.Empty(position)) return null;
         GameObject block = Instantiate(gameObject, position, Quaternion.identity, References.worldContainer.transform);
-        this.position = position;
         World.Add(position, block.GetComponent<Block>());
         return block.GetComponent<Block>();
     }
