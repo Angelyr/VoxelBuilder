@@ -12,6 +12,7 @@ public class Slot : MonoBehaviour
     private Image image;
     private Color color;
     private Block block;
+    private bool setThumbnailProperties = false;
 
     private void Awake()
     {
@@ -20,6 +21,15 @@ public class Slot : MonoBehaviour
         image = GetComponent<Image>();
         color = image.color;
         btn.onClick.AddListener(Select);
+    }
+
+    private void ThumbnailProperties()
+    {
+        if (setThumbnailProperties) return;
+        setThumbnailProperties = true;
+        RuntimePreviewGenerator.BackgroundColor = new Color(1, 1, 1, 0);
+        RuntimePreviewGenerator.OrthographicMode = true;
+        RuntimePreviewGenerator.PreviewDirection = new Vector3(-1,-.5f,-.5f);
     }
 
     private void Select()
@@ -39,7 +49,9 @@ public class Slot : MonoBehaviour
     {
         this.block = block;
         transform.Find("Image").GetComponent<Image>().enabled = true;
-        transform.Find("Image").GetComponent<Image>().sprite = ConvertToSprite(AssetPreview.GetAssetPreview(block.gameObject));
+        ThumbnailProperties();
+        Texture2D texture = RuntimePreviewGenerator.GenerateModelPreview(block.transform);
+        transform.Find("Image").GetComponent<Image>().sprite = ConvertToSprite(texture);
     }
 
     public void Use(Vector3Int target)
