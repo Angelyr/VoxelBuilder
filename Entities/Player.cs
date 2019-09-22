@@ -14,10 +14,10 @@ public class Player : MonoBehaviour
     //Controls
     //Camera
 
-    new private Camera camera;
+    private Camera cam;
     private View view;
     private Inventory inventory;
-    private bool lockCamera;
+    private bool cameraLocked;
     private bool airTargetMode = true;
     private bool extendMode = true;
     private bool architectMode = false;
@@ -30,7 +30,7 @@ public class Player : MonoBehaviour
     private void Awake()
     {
         view = transform.Find("Camera").GetComponent<View>();
-        camera = transform.Find("Camera").GetComponent<Camera>();
+        cam = transform.Find("Camera").GetComponent<Camera>();
         inventory = transform.Find("Canvas/Tools/InventoryBtn").GetComponent<Inventory>();
 
         LockCamera();
@@ -38,11 +38,10 @@ public class Player : MonoBehaviour
 
     private void Update()
     {
-        if (lockCamera) view.Move(architectMode);
+        if (cameraLocked) view.Move(architectMode);
         Inputs();
         Move(direction);
     }
-
 
     //Private 
 
@@ -59,12 +58,7 @@ public class Player : MonoBehaviour
 
         if (Input.GetMouseButtonDown(0)) Place();
         if (Input.GetMouseButtonDown(1)) Delete();
-        if (Input.GetKeyDown("i"))
-        {
-            inventory.Toggle();
-            if (inventory.Active()) UnlockCamera();
-            else LockCamera();
-        }
+        if (Input.GetKeyDown("i")) ToggleInventory();
         if (Input.GetKeyDown("z")) ToggleAirTarget();
         if (Input.GetKeyDown("x")) ToggleExtend();
         if (Input.GetKeyDown("c")) ToggleArchitect();
@@ -90,11 +84,11 @@ public class Player : MonoBehaviour
     {
         if (Input.GetMouseButtonDown(2))
         {
-            prevMouse = camera.ScreenToViewportPoint(Input.mousePosition);
+            prevMouse = cam.ScreenToViewportPoint(Input.mousePosition);
         }
         if (Input.GetMouseButton(2))
         {
-            Vector3 mouse = camera.ScreenToViewportPoint(Input.mousePosition);
+            Vector3 mouse = cam.ScreenToViewportPoint(Input.mousePosition);
             direction = (prevMouse - mouse) * 100;
         }
         if (Input.GetMouseButtonUp(2))
@@ -105,7 +99,7 @@ public class Player : MonoBehaviour
 
     private void Place()
     {
-        if (!lockCamera) return;
+        if (!cameraLocked) return;
         Vector3Int target = TargetAir();
 
         if (target == Vector3Int.RoundToInt(Direction(Vector3.forward, 2)) && !airTargetMode) return;
@@ -129,7 +123,7 @@ public class Player : MonoBehaviour
         if (direction == Vector3.zero) return;
         float up = direction.y;
         direction.y = 0;
-        Vector3 target = transform.position + camera.transform.TransformDirection(direction);
+        Vector3 target = transform.position + cam.transform.TransformDirection(direction);
         target.y = transform.position.y + up;
 
         float speed = 0f;
@@ -180,7 +174,7 @@ public class Player : MonoBehaviour
 
     private Vector3 Direction(Vector3 direction, float dist)
     {
-        Vector3 target = transform.position + camera.transform.TransformDirection(direction*dist);
+        Vector3 target = transform.position + cam.transform.TransformDirection(direction*dist);
         return Vector3.MoveTowards(transform.position, target, dist);
     }
 
@@ -188,30 +182,37 @@ public class Player : MonoBehaviour
     {
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
-        lockCamera = false;
+        cameraLocked = false;
     }
 
     private void LockCamera()
     {
-        Cursor.lockState = CursorLockMode.Locked;
-        Cursor.visible = false;
-        lockCamera = true;
+        if (!architectMode) Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = architectMode;
+        cameraLocked = true;
     }
 
     private Vector3 Target(Vector3 targetDirection)
     {
-        Vector3 target = camera.transform.TransformDirection(targetDirection);
+        Vector3 target = cam.transform.TransformDirection(targetDirection);
 
 
         if (architectMode)
         {
-            target = camera.ScreenPointToRay(Input.mousePosition).direction;
+            target = cam.ScreenPointToRay(Input.mousePosition).direction;
         }
         
         return target;
     }
 
     //Public
+
+    public void ToggleInventory()
+    {
+        inventory.Toggle();
+        if (inventory.Active()) UnlockCamera();
+        else LockCamera();
+    }
 
     public void ToggleAirTarget()
     {
