@@ -34,6 +34,11 @@ public class Block : MonoBehaviour
 
     //Public
 
+    public string TextureName()
+    {
+        return transform.Find("Front").GetComponent<MeshRenderer>().sharedMaterial.name;
+    }
+
     public Vector3Int Position()
     {
         return Vector3Int.RoundToInt(transform.position);

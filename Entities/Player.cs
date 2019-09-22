@@ -14,10 +14,10 @@ public class Player : MonoBehaviour
     //Controls
     //Camera
 
-    private new Camera camera;
+    new private Camera camera;
     private View view;
     private Inventory inventory;
-    private bool lockedCursor;
+    private bool lockCamera;
     private bool airTargetMode = true;
     private bool extendMode = true;
     private bool architectMode = false;
@@ -33,12 +33,12 @@ public class Player : MonoBehaviour
         camera = transform.Find("Camera").GetComponent<Camera>();
         inventory = transform.Find("Canvas/Tools/InventoryBtn").GetComponent<Inventory>();
 
-        LockCursor();
+        LockCamera();
     }
 
     private void Update()
     {
-        if (lockedCursor) view.Move(architectMode);
+        if (lockCamera) view.Move(architectMode);
         Inputs();
         Move(direction);
     }
@@ -62,8 +62,8 @@ public class Player : MonoBehaviour
         if (Input.GetKeyDown("i"))
         {
             inventory.Toggle();
-            if (inventory.Active()) UnlockCursor();
-            else LockCursor();
+            if (inventory.Active()) UnlockCamera();
+            else LockCamera();
         }
         if (Input.GetKeyDown("z")) ToggleAirTarget();
         if (Input.GetKeyDown("x")) ToggleExtend();
@@ -105,7 +105,7 @@ public class Player : MonoBehaviour
 
     private void Place()
     {
-        if (!lockedCursor) return;
+        if (!lockCamera) return;
         Vector3Int target = TargetAir();
 
         if (target == Vector3Int.RoundToInt(Direction(Vector3.forward, 2)) && !airTargetMode) return;
@@ -184,16 +184,18 @@ public class Player : MonoBehaviour
         return Vector3.MoveTowards(transform.position, target, dist);
     }
 
-    private void UnlockCursor()
+    private void UnlockCamera()
     {
         Cursor.lockState = CursorLockMode.None;
-        lockedCursor = false;
+        Cursor.visible = true;
+        lockCamera = false;
     }
 
-    private void LockCursor()
+    private void LockCamera()
     {
         Cursor.lockState = CursorLockMode.Locked;
-        lockedCursor = true;
+        Cursor.visible = false;
+        lockCamera = true;
     }
 
     private Vector3 Target(Vector3 targetDirection)
@@ -224,7 +226,10 @@ public class Player : MonoBehaviour
     public void ToggleArchitect()
     {
         architectMode = !architectMode;
+
         if (architectMode) Cursor.lockState = CursorLockMode.None;
         else Cursor.lockState = CursorLockMode.Locked;
+
+        Cursor.visible = architectMode;
     }
 }

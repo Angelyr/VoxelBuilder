@@ -49,8 +49,8 @@ public class Slot : MonoBehaviour
     {
         this.block = block;
         transform.Find("Image").GetComponent<Image>().enabled = true;
-        ThumbnailProperties();
-        Texture2D texture = RuntimePreviewGenerator.GenerateModelPreview(block.transform);
+        string name = block.TextureName();
+        Texture2D texture = Resources.Load<Texture2D>("Sprites/" + name);
         transform.Find("Image").GetComponent<Image>().sprite = ConvertToSprite(texture);
     }
 
