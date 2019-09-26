@@ -31,7 +31,7 @@ public class Player : MonoBehaviour
     {
         view = transform.Find("Camera").GetComponent<View>();
         cam = transform.Find("Camera").GetComponent<Camera>();
-        inventory = transform.Find("Canvas/Tools/InventoryBtn").GetComponent<Inventory>();
+        inventory = transform.Find("Canvas/Inventory").GetComponent<Inventory>();
 
         LockCamera();
     }

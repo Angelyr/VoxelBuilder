@@ -7,14 +7,16 @@ public class UI : MonoBehaviour
 {
     protected Button button;
 
-    private void Awake()
+    protected virtual void Awake()
     {
-        button = GetComponent<Button>();
-        button.onClick.AddListener(OnClick);
+        if (GetComponent<Button>())
+        {
+            button = GetComponent<Button>();
+            button.onClick.AddListener(OnClick);
+        }
     }
 
-    protected virtual void OnClick()
-    {
+    protected virtual void OnClick() { }
 
-    }
+    public virtual void Select(Slot target) { }
 }

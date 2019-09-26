@@ -5,23 +5,17 @@ using System;
 using System.IO;
 using System.Collections.Generic;
 
-[Serializable]
-public class Inventory : MonoBehaviour
+public class Inventory : UI
 {
     //Blocks
     //Loaded from file
 
-    private GameObject inventoryUI;
-    private Button invetoryBtn;
     private Slot selected;
    
     //Monobehavior
 
-    private void Awake()
+    protected override void Awake()
     {
-        inventoryUI = transform.Find("Inventory").gameObject;
-        invetoryBtn = GetComponent<Button>();
-        invetoryBtn.onClick.AddListener(Toggle);
         Load();
     }
 
@@ -32,7 +26,7 @@ public class Inventory : MonoBehaviour
         GameObject[] blocks = Resources.LoadAll<GameObject>("Blocks");
         for(int i=0; i<blocks.Length; i++)
         {
-            inventoryUI.transform.GetChild(i).GetComponent<Slot>().Add(blocks[i].GetComponent<Block>());
+            transform.GetChild(i).GetComponent<Slot>().Add(blocks[i].GetComponent<Block>());
         }
 
     }
@@ -41,15 +35,15 @@ public class Inventory : MonoBehaviour
 
     public void Toggle()
     {
-        inventoryUI.SetActive(!inventoryUI.activeSelf);
+        gameObject.SetActive(!gameObject.activeSelf);
     }
 
     public bool Active()
     {
-        return inventoryUI.activeSelf;
+        return gameObject.activeSelf;
     }
 
-    public void Select(Slot selected)
+    public override void Select(Slot selected)
     {
         if (this.selected != null) this.selected.DeSelect();
         this.selected = selected;

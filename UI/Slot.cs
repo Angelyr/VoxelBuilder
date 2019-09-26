@@ -8,7 +8,7 @@ public class Slot : MonoBehaviour
 {
     //Block
     private Button btn;
-    private Inventory inventory;
+    private UI inventory;
     private Image image;
     private Color color;
     private Block block;
@@ -17,7 +17,7 @@ public class Slot : MonoBehaviour
     private void Awake()
     {
         btn = GetComponent<Button>();
-        inventory = transform.parent.parent.GetComponent<Inventory>();
+        inventory = transform.parent.GetComponent<UI>();
         image = GetComponent<Image>();
         color = image.color;
         btn.onClick.AddListener(Select);
