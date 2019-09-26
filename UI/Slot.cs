@@ -14,14 +14,18 @@ public class Slot : MonoBehaviour
     private Block block;
     private bool setThumbnailProperties = false;
 
+    //Monobehavior
+
     private void Awake()
     {
         btn = GetComponent<Button>();
         inventory = transform.parent.GetComponent<UI>();
         image = GetComponent<Image>();
         color = image.color;
-        btn.onClick.AddListener(Select);
+        btn.onClick.AddListener(OnClick);
     }
+    
+    //Private
 
     private void ThumbnailProperties()
     {
@@ -32,10 +36,16 @@ public class Slot : MonoBehaviour
         RuntimePreviewGenerator.PreviewDirection = new Vector3(-1,-.5f,-.5f);
     }
 
-    private void Select()
+    private void OnClick()
     {
         inventory.Select(this);
         image.color = Color.yellow;
+        References.player.Select(block);
+    }
+
+    private static Sprite ConvertToSprite(Texture2D texture)
+    {
+        return Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), Vector2.zero);
     }
 
     //Public
@@ -54,15 +64,8 @@ public class Slot : MonoBehaviour
         transform.Find("Image").GetComponent<Image>().sprite = ConvertToSprite(texture);
     }
 
-    public void Use(Vector3Int target)
+    public Block Get()
     {
-        block.Use(target);
+        return block;
     }
-
-    private static Sprite ConvertToSprite(Texture2D texture)
-    {
-        return Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), Vector2.zero);
-    }
-
-
 }

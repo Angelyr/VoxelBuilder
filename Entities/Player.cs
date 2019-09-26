@@ -24,6 +24,7 @@ public class Player : MonoBehaviour
     private Vector3 direction = Vector3.zero;
     private Vector3Int lastDirection;
     private Vector3 prevMouse;
+    private Block selected;
     
     //MonoBehavior
 
@@ -103,7 +104,7 @@ public class Player : MonoBehaviour
         Vector3Int target = TargetAir();
 
         if (target == Vector3Int.RoundToInt(Direction(Vector3.forward, 2)) && !airTargetMode) return;
-        inventory.UseSelected(TargetAir());
+        selected.Use(TargetAir());
         
         if (!World.Empty(target) && extendMode) World.Get(target).Extend(lastDirection);
     }
@@ -196,7 +197,6 @@ public class Player : MonoBehaviour
     {
         Vector3 target = cam.transform.TransformDirection(targetDirection);
 
-
         if (architectMode)
         {
             target = cam.ScreenPointToRay(Input.mousePosition).direction;
@@ -206,6 +206,11 @@ public class Player : MonoBehaviour
     }
 
     //Public
+
+    public void Select(Block block)
+    {
+        selected = block;
+    }
 
     public void ToggleInventory()
     {
