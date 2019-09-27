@@ -20,6 +20,7 @@ public class BlockSave
     public int y;
     public int z;
     public string name;
+    public string type;
 
     public BlockSave(Vector3Int position, string name)
     {
@@ -28,6 +29,15 @@ public class BlockSave
         z = position.z;
 
         this.name = name;
+    }
+
+    public BlockSave(Block block, string type = null)
+    {
+        this.x = block.Position().x;
+        this.y = block.Position().y;
+        this.z = block.Position().z;
+        this.name = block.gameObject.name;
+        this.type = type;
     }
 }
 

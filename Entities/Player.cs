@@ -16,6 +16,7 @@ public class Player : MonoBehaviour
     private Vector3 prevMouse;
     private Block selected;
     private Hotbar hotbar;
+    private Stack<List<BlockSave>> history;
     
     //MonoBehavior
 
@@ -25,6 +26,7 @@ public class Player : MonoBehaviour
         cam = transform.Find("Camera").GetComponent<Camera>();
         inventory = transform.Find("Canvas/Inventory").GetComponent<Inventory>();
         hotbar = transform.Find("Canvas/Hotbar").GetComponent<Hotbar>();
+        history = new Stack<List<BlockSave>>();
 
         LockCamera();
     }
@@ -52,6 +54,7 @@ public class Player : MonoBehaviour
         if (Input.GetMouseButtonDown(0)) Place();
         if (Input.GetMouseButtonDown(1)) Delete();
         if (Input.GetKeyDown("i")) ToggleInventory();
+        if (Input.GetKeyDown("u")) Undo();
         if (Input.GetKeyDown("z")) ToggleAirTarget();
         if (Input.GetKeyDown("x")) ToggleExtend();
         if (Input.GetKeyDown("c")) ToggleArchitect();
@@ -98,19 +101,34 @@ public class Player : MonoBehaviour
         Vector3Int target = TargetAir();
 
         if (target == Vector3Int.RoundToInt(Direction(Vector3.forward, 2)) && !airTargetMode) return;
-        selected.Use(TargetAir());
-        
+
+        Block block = selected.Use(TargetAir());
+        if (block)
+        {
+            history.Push(new List<BlockSave>());
+            history.Peek().Add(new BlockSave(block, "build"));
+        }
+
+
         if (!World.Empty(target) && extendMode) Extend(lastDirection, target);
     }
 
     private void Delete()
     {
         Vector3Int target = TargetBlock();
-        if(!World.Empty(target) && extendMode)
+        if (World.Empty(target)) return;
+
+        history.Push(new List<BlockSave>());
+
+        if (extendMode)
         {
             Subtract(lastDirection, target);
         }
-        else World.Remove(TargetBlock());
+        else
+        {
+            history.Peek().Add(new BlockSave(World.Get(target), "delete"));
+            World.Remove(TargetBlock());
+        }
     }
 
     private void Move(Vector3 direction)
@@ -212,7 +230,8 @@ public class Player : MonoBehaviour
             if (!World.Empty(target)) continue;
             if (World.Empty(target + direction)) continue;
 
-            selected.Use(target);
+            Block block = selected.Use(target);
+            if(block) history.Peek().Add(new BlockSave(block, "build"));
             Extend(direction, target);
         }
     }
@@ -229,7 +248,24 @@ public class Player : MonoBehaviour
             if (direction.z != 0 && target.z != position.z) continue;
 
             if (World.Empty(target)) continue;
+            history.Peek().Add(new BlockSave(World.Get(target), "delete"));
             Subtract(direction, target);
+        }
+    }
+
+    private void Undo()
+    {
+        if (history.Count == 0) return;
+        foreach(BlockSave block in history.Pop())
+        {
+            if(block.type == "build")
+            {
+                World.Remove(new Vector3Int(block.x, block.y, block.z));
+            }
+            if(block.type == "delete")
+            {
+                World.Create(block);
+            }
         }
     }
 
