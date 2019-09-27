@@ -4,16 +4,6 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
-    //Keep in mind multiple players
-    //UI
-    //Inventory
-    //Hotbar
-    //Options
-    //In World
-    //Move
-    //Controls
-    //Camera
-
     private Camera cam;
     private View view;
     private Inventory inventory;
@@ -104,12 +94,13 @@ public class Player : MonoBehaviour
     private void Place()
     {
         if (!cameraLocked) return;
+        if (selected == null) return;
         Vector3Int target = TargetAir();
 
         if (target == Vector3Int.RoundToInt(Direction(Vector3.forward, 2)) && !airTargetMode) return;
         selected.Use(TargetAir());
         
-        if (!World.Empty(target) && extendMode) World.Get(target).Extend(lastDirection);
+        if (!World.Empty(target) && extendMode) Extend(lastDirection, target);
     }
 
     private void Delete()
@@ -117,7 +108,7 @@ public class Player : MonoBehaviour
         Vector3Int target = TargetBlock();
         if(!World.Empty(target) && extendMode)
         {
-            World.Get(target).Subtract(lastDirection, null);
+            Subtract(lastDirection, target);
         }
         else World.Remove(TargetBlock());
     }
@@ -206,6 +197,40 @@ public class Player : MonoBehaviour
         }
         
         return target;
+    }
+
+    private void Extend(Vector3Int direction, Vector3Int position)
+    {
+        List<Vector3Int> surrounding = World.GetSurrounding(position);
+
+        foreach (Vector3Int target in surrounding)
+        {
+            if (direction.x != 0 && target.x != position.x) continue;
+            if (direction.y != 0 && target.y != position.y) continue;
+            if (direction.z != 0 && target.z != position.z) continue;
+
+            if (!World.Empty(target)) continue;
+            if (World.Empty(target + direction)) continue;
+
+            selected.Use(target);
+            Extend(direction, target);
+        }
+    }
+
+    private void Subtract(Vector3Int direction, Vector3Int position)
+    {
+        World.Remove(position);
+        List<Vector3Int> surrounding = World.GetSurrounding(position);
+
+        foreach (Vector3Int target in surrounding)
+        {
+            if (direction.x != 0 && target.x != position.x) continue;
+            if (direction.y != 0 && target.y != position.y) continue;
+            if (direction.z != 0 && target.z != position.z) continue;
+
+            if (World.Empty(target)) continue;
+            Subtract(direction, target);
+        }
     }
 
     //Public

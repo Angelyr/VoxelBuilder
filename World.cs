@@ -6,14 +6,7 @@ using UnityEngine;
 
 [Serializable]
 public class World : MonoBehaviour
-{
-    //Blocks
-    //Shared between players
-    //Can be saved
-    //Can be imported
-    //Only one world
-    //Players
-    
+{   
     private static Dictionary<Vector3Int, Block> world;
 
     //Monobehavior
