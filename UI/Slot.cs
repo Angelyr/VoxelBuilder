@@ -50,6 +50,12 @@ public class Slot : MonoBehaviour
 
     //Public
 
+    public void Select()
+    {
+        image.color = Color.yellow;
+        References.player.Select(block);
+    }
+
     public void DeSelect()
     {
         image.color = color;
@@ -57,6 +63,7 @@ public class Slot : MonoBehaviour
 
     public void Add(Block block)
     {
+        if (block == null) return;
         this.block = block;
         transform.Find("Image").GetComponent<Image>().enabled = true;
         string name = block.TextureName();

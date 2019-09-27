@@ -25,6 +25,7 @@ public class Player : MonoBehaviour
     private Vector3Int lastDirection;
     private Vector3 prevMouse;
     private Block selected;
+    private Hotbar hotbar;
     
     //MonoBehavior
 
@@ -33,6 +34,7 @@ public class Player : MonoBehaviour
         view = transform.Find("Camera").GetComponent<View>();
         cam = transform.Find("Camera").GetComponent<Camera>();
         inventory = transform.Find("Canvas/Inventory").GetComponent<Inventory>();
+        hotbar = transform.Find("Canvas/Hotbar").GetComponent<Hotbar>();
 
         LockCamera();
     }
@@ -63,6 +65,7 @@ public class Player : MonoBehaviour
         if (Input.GetKeyDown("z")) ToggleAirTarget();
         if (Input.GetKeyDown("x")) ToggleExtend();
         if (Input.GetKeyDown("c")) ToggleArchitect();
+        for (int i = 1; i <= 5; i++) if (Input.GetKeyDown(i + "")) hotbar.Select(i-1); 
 
         
     }
@@ -210,6 +213,7 @@ public class Player : MonoBehaviour
     public void Select(Block block)
     {
         selected = block;
+        hotbar.Add(block);
     }
 
     public void ToggleInventory()
