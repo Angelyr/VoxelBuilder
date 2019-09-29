@@ -5,7 +5,7 @@ using UnityEngine;
 public class Hotbar : UI
 {
     List<Slot> slots;
-    Queue<Block> blocks;
+    List<Block> blocks;
     Slot selected;
     int size;
 
@@ -14,7 +14,7 @@ public class Hotbar : UI
         base.Awake();
         slots = new List<Slot>();
         foreach (Transform child in transform) slots.Add(child.GetComponent<Slot>());
-        blocks = new Queue<Block>();
+        blocks = new List<Block>();
         size = transform.childCount;
     }
 
@@ -24,8 +24,8 @@ public class Hotbar : UI
     {
         if (blocks.Contains(block)) return;
 
-        if (blocks.Count >= size) blocks.Dequeue();
-        blocks.Enqueue(block);
+        if (blocks.Count >= size) blocks.RemoveAt(blocks.Count - 1);
+        blocks.Insert(0, block);
 
         for(int i=size-1; i>0; i--)
         {
@@ -39,5 +39,16 @@ public class Hotbar : UI
         if (selected != null) selected.DeSelect();
         selected = slots[target];
         slots[target].Select();
+    }
+
+    public void Select(Block target)
+    {
+        for(int i=0; i<blocks.Count; i++)
+        {
+            if(blocks[i].name == target.name)
+            {
+                Select(i);
+            }
+        }
     }
 }

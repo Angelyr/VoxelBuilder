@@ -55,6 +55,7 @@ public class Player : MonoBehaviour
 
         if (Input.GetMouseButtonDown(0)) Place();
         if (Input.GetMouseButtonDown(1)) Delete();
+        if (Input.GetMouseButtonDown(2)) GetBlock();
         if (Input.GetKeyDown("i")) ToggleInventory();
         if (Input.GetKeyDown("u")) Undo();
         if (Input.GetKeyDown("z")) ToggleAirTarget();
@@ -274,6 +275,14 @@ public class Player : MonoBehaviour
         cameraMove = true;
     }
 
+    private void GetBlock()
+    {
+        Block block = World.Get(TargetBlock());
+        selected = Resources.Load<GameObject>("Blocks/" + block.name).GetComponent<Block>();
+        hotbar.Add(selected);
+        hotbar.Select(selected);
+    }
+
     //Public
 
     public void ToggleMenu()
@@ -281,8 +290,8 @@ public class Player : MonoBehaviour
         if (menu.activeSelf)
         {
             menu.SetActive(false);
-            if (!architectMode) Cursor.lockState = CursorLockMode.Locked;
             Cursor.visible = architectMode;
+            if (!architectMode) Cursor.lockState = CursorLockMode.Locked;
             cameraMove = true;
         }
         else
