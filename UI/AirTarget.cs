@@ -2,17 +2,9 @@
 using UnityEditor;
 using UnityEngine.UI;
 
-public class AirTarget : MonoBehaviour
+public class AirTarget : UI
 {
-    private Button button;
-
-    private void Awake()
-    {
-        button = GetComponent<Button>();
-        button.onClick.AddListener(AirTargetMode);
-    }
-
-    private void AirTargetMode()
+    protected override void OnClick()
     {
         References.player.ToggleAirTarget();
     }

@@ -7,7 +7,7 @@ public class Player : MonoBehaviour
     private Camera cam;
     private View view;
     private Inventory inventory;
-    private bool cameraLocked;
+    private bool cameraMove;
     private bool airTargetMode = true;
     private bool extendMode = true;
     private bool architectMode = false;
@@ -17,6 +17,7 @@ public class Player : MonoBehaviour
     private Block selected;
     private Hotbar hotbar;
     private Stack<List<BlockSave>> history;
+    private GameObject menu;
     
     //MonoBehavior
 
@@ -27,13 +28,14 @@ public class Player : MonoBehaviour
         inventory = transform.Find("Canvas/Inventory").GetComponent<Inventory>();
         hotbar = transform.Find("Canvas/Hotbar").GetComponent<Hotbar>();
         history = new Stack<List<BlockSave>>();
+        menu = transform.Find("Canvas/Menu").gameObject;
 
-        LockCamera();
+        CameraCanMove();
     }
 
     private void Update()
     {
-        if (cameraLocked) view.Move(architectMode);
+        if (cameraMove) view.Move(architectMode);
         Inputs();
         Move(direction);
     }
@@ -58,6 +60,7 @@ public class Player : MonoBehaviour
         if (Input.GetKeyDown("z")) ToggleAirTarget();
         if (Input.GetKeyDown("x")) ToggleExtend();
         if (Input.GetKeyDown("c")) ToggleArchitect();
+        if (Input.GetKeyDown("escape")) ToggleMenu();
         for (int i = 1; i <= 5; i++) if (Input.GetKeyDown(i + "")) hotbar.Select(i-1); 
 
         
@@ -96,7 +99,7 @@ public class Player : MonoBehaviour
 
     private void Place()
     {
-        if (!cameraLocked) return;
+        if (!cameraMove) return;
         if (selected == null) return;
         Vector3Int target = TargetAir();
 
@@ -191,19 +194,7 @@ public class Player : MonoBehaviour
         return Vector3.MoveTowards(transform.position, target, dist);
     }
 
-    private void UnlockCamera()
-    {
-        Cursor.lockState = CursorLockMode.None;
-        Cursor.visible = true;
-        cameraLocked = false;
-    }
-
-    private void LockCamera()
-    {
-        if (!architectMode) Cursor.lockState = CursorLockMode.Locked;
-        Cursor.visible = architectMode;
-        cameraLocked = true;
-    }
+    
 
     private Vector3 Target(Vector3 targetDirection)
     {
@@ -269,7 +260,39 @@ public class Player : MonoBehaviour
         }
     }
 
+    private void CameraCantMove()
+    {
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
+        cameraMove = false;
+    }
+
+    private void CameraCanMove()
+    {
+        if (!architectMode) Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = architectMode;
+        cameraMove = true;
+    }
+
     //Public
+
+    public void ToggleMenu()
+    {
+        if (menu.activeSelf)
+        {
+            menu.SetActive(false);
+            if (!architectMode) Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = architectMode;
+            cameraMove = true;
+        }
+        else
+        {
+            menu.SetActive(true);
+            Cursor.visible = true;
+            cameraMove = false;
+            Cursor.lockState = CursorLockMode.None;
+        }
+    }
 
     public void Select(Block block)
     {
@@ -280,8 +303,8 @@ public class Player : MonoBehaviour
     public void ToggleInventory()
     {
         inventory.Toggle();
-        if (inventory.Active()) UnlockCamera();
-        else LockCamera();
+        if (inventory.Active()) CameraCantMove();
+        else CameraCanMove();
     }
 
     public void ToggleAirTarget()
