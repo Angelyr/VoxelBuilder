@@ -59,7 +59,7 @@ public class Player : MonoBehaviour
         if (Input.GetKeyDown("i")) ToggleInventory();
         if (Input.GetKeyDown("u")) Undo();
         if (Input.GetKeyDown("z")) ToggleAirTarget();
-        if (Input.GetKeyDown("x")) ToggleExtend();
+        if (Input.GetKeyDown("e")) ToggleExtend();
         if (Input.GetKeyDown("c")) ToggleArchitect();
         if (Input.GetKeyDown("escape")) ToggleMenu();
         for (int i = 1; i <= 5; i++) if (Input.GetKeyDown(i + "")) hotbar.Select(i-1); 
@@ -245,21 +245,7 @@ public class Player : MonoBehaviour
         }
     }
 
-    private void Undo()
-    {
-        if (history.Count == 0) return;
-        foreach(BlockSave block in history.Pop())
-        {
-            if(block.type == "build")
-            {
-                World.Remove(new Vector3Int(block.x, block.y, block.z));
-            }
-            if(block.type == "delete")
-            {
-                World.Create(block);
-            }
-        }
-    }
+    
 
     private void CameraCantMove()
     {
@@ -278,12 +264,29 @@ public class Player : MonoBehaviour
     private void GetBlock()
     {
         Block block = World.Get(TargetBlock());
+        if (block == null) return;
         selected = Resources.Load<GameObject>("Blocks/" + block.name).GetComponent<Block>();
         hotbar.Add(selected);
         hotbar.Select(selected);
     }
 
     //Public
+
+    public void Undo()
+    {
+        if (history.Count == 0) return;
+        foreach (BlockSave block in history.Pop())
+        {
+            if (block.type == "build")
+            {
+                World.Remove(new Vector3Int(block.x, block.y, block.z));
+            }
+            if (block.type == "delete")
+            {
+                World.Create(block);
+            }
+        }
+    }
 
     public void ToggleMenu()
     {
