@@ -18,6 +18,7 @@ public class Player : MonoBehaviour
     private Hotbar hotbar;
     private Stack<List<BlockSave>> history;
     private GameObject menu;
+    private float buildTimer = 0;
     
     //MonoBehavior
 
@@ -53,9 +54,10 @@ public class Player : MonoBehaviour
         MouseDirection();
         Zoom();
 
-        if (Input.GetMouseButtonDown(0)) Place();
-        if (Input.GetMouseButtonDown(1)) Delete();
+        if (Input.GetMouseButton(0)) Place();
+        if (Input.GetMouseButton(1)) Delete();
         if (Input.GetMouseButtonDown(2)) GetBlock();
+        if (!Input.GetMouseButton(0) && !Input.GetMouseButton(1)) buildTimer = 0;
         if (Input.GetKeyDown("i")) ToggleInventory();
         if (Input.GetKeyDown("u")) Undo();
         if (Input.GetKeyDown("z")) ToggleAirTarget();
@@ -98,10 +100,19 @@ public class Player : MonoBehaviour
         }
     }
 
+    private bool Timer(float time)
+    {
+        float timer = buildTimer;
+        buildTimer += Time.deltaTime;
+        if (buildTimer >= time) buildTimer = 0;
+        return timer == 0;
+    }
+
     private void Place()
     {
         if (!cameraMove) return;
         if (selected == null) return;
+        if (!Timer(.5f)) return;
         Vector3Int target = TargetAir();
 
         if (target == Vector3Int.RoundToInt(Direction(Vector3.forward, 2)) && !airTargetMode) return;
@@ -119,6 +130,7 @@ public class Player : MonoBehaviour
 
     private void Delete()
     {
+        if (!Timer(.5f)) return;
         Vector3Int target = TargetBlock();
         if (World.Empty(target)) return;
 
