@@ -11,6 +11,7 @@ public class Player : MonoBehaviour
     private bool airTargetMode = true;
     private bool extendMode = true;
     private bool architectMode = false;
+    private bool replace = false;
     private Vector3 direction = Vector3.zero;
     private Vector3Int lastDirection;
     private Vector3 prevMouse;
@@ -54,7 +55,8 @@ public class Player : MonoBehaviour
         MouseDirection();
         Zoom();
 
-        if (Input.GetMouseButton(0)) Place();
+        if (Input.GetMouseButton(0) && !replace) Place();
+        if (Input.GetMouseButton(0) && replace) Replace();
         if (Input.GetMouseButton(1)) Delete();
         if (Input.GetMouseButtonDown(2)) GetBlock();
         if (!Input.GetMouseButton(0) && !Input.GetMouseButton(1)) buildTimer = 0;
@@ -63,6 +65,7 @@ public class Player : MonoBehaviour
         if (Input.GetKeyDown("z")) ToggleAirTarget();
         if (Input.GetKeyDown("e")) ToggleExtend();
         if (Input.GetKeyDown("c")) ToggleArchitect();
+        if (Input.GetKeyDown("r")) ToggleReplace();
         if (Input.GetKeyDown("escape")) ToggleMenu();
         for (int i = 1; i <= 5; i++) if (Input.GetKeyDown(i + "")) hotbar.Select(i-1); 
 
@@ -117,7 +120,7 @@ public class Player : MonoBehaviour
 
         if (target == Vector3Int.RoundToInt(Direction(Vector3.forward, 2)) && !airTargetMode) return;
 
-        Block block = selected.Use(TargetAir());
+        Block block = selected.Use(target);
         if (block)
         {
             history.Push(new List<BlockSave>());
@@ -125,7 +128,7 @@ public class Player : MonoBehaviour
         }
 
 
-        if (!World.Empty(target) && extendMode) Extend(lastDirection, target);
+        if (!World.Empty(target) && extendMode) ExtendBuild(lastDirection, target);
     }
 
     private void Delete()
@@ -138,12 +141,31 @@ public class Player : MonoBehaviour
 
         if (extendMode)
         {
-            Subtract(lastDirection, target);
+            ExtendDelete(lastDirection, target);
         }
         else
         {
             history.Peek().Add(new BlockSave(World.Get(target), "delete"));
-            World.Remove(TargetBlock());
+            World.Remove(target);
+        }
+    }
+
+    private void Replace()
+    {
+        if (!Timer(.5f)) return;
+        Vector3Int target = TargetBlock();
+        if (World.Empty(target)) return;
+        history.Push(new List<BlockSave>());
+
+        if(extendMode)
+        {
+            ExtendReplace(lastDirection, target, new List<Vector3Int>());
+        }
+        else
+        {
+            history.Peek().Add(new BlockSave(World.Get(target), "replace"));
+            World.Remove(target);
+            selected.Use(target);
         }
     }
 
@@ -221,7 +243,27 @@ public class Player : MonoBehaviour
         return target;
     }
 
-    private void Extend(Vector3Int direction, Vector3Int position)
+    private void ExtendReplace(Vector3Int direction, Vector3Int position, List<Vector3Int> prev)
+    {
+        history.Peek().Add(new BlockSave(World.Get(position), "replace"));
+        World.Remove(position);
+        selected.Use(position);
+        prev.Add(position);
+        List<Vector3Int> surrounding = World.GetSurrounding(position);
+
+        foreach (Vector3Int target in surrounding)
+        {
+            if (direction.x != 0 && target.x != position.x) continue;
+            if (direction.y != 0 && target.y != position.y) continue;
+            if (direction.z != 0 && target.z != position.z) continue;
+
+            if (World.Empty(target)) continue;
+            if (prev.Contains(target)) continue;
+            ExtendReplace(direction, target, prev);
+        }
+    }
+
+    private void ExtendBuild(Vector3Int direction, Vector3Int position)
     {
         List<Vector3Int> surrounding = World.GetSurrounding(position);
 
@@ -236,12 +278,13 @@ public class Player : MonoBehaviour
 
             Block block = selected.Use(target);
             if(block) history.Peek().Add(new BlockSave(block, "build"));
-            Extend(direction, target);
+            ExtendBuild(direction, target);
         }
     }
 
-    private void Subtract(Vector3Int direction, Vector3Int position)
+    private void ExtendDelete(Vector3Int direction, Vector3Int position)
     {
+        history.Peek().Add(new BlockSave(World.Get(position), "delete"));
         World.Remove(position);
         List<Vector3Int> surrounding = World.GetSurrounding(position);
 
@@ -252,8 +295,7 @@ public class Player : MonoBehaviour
             if (direction.z != 0 && target.z != position.z) continue;
 
             if (World.Empty(target)) continue;
-            history.Peek().Add(new BlockSave(World.Get(target), "delete"));
-            Subtract(direction, target);
+            ExtendDelete(direction, target);
         }
     }
 
@@ -284,6 +326,11 @@ public class Player : MonoBehaviour
 
     //Public
 
+    public void ToggleReplace()
+    {
+        replace = !replace;
+    }
+
     public void Undo()
     {
         if (history.Count == 0) return;
@@ -295,6 +342,11 @@ public class Player : MonoBehaviour
             }
             if (block.type == "delete")
             {
+                World.Create(block);
+            }
+            if (block.type == "replace")
+            {
+                World.Remove(new Vector3Int(block.x, block.y, block.z));
                 World.Create(block);
             }
         }
