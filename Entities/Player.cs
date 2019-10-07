@@ -12,6 +12,7 @@ public class Player : MonoBehaviour
     private bool extendMode = true;
     private bool architectMode = false;
     private bool replace = false;
+    private bool extendMatching = false;
     private Vector3 direction = Vector3.zero;
     private Vector3Int lastDirection;
     private Vector3 prevMouse;
@@ -20,6 +21,7 @@ public class Player : MonoBehaviour
     private Stack<List<BlockSave>> history;
     private GameObject menu;
     private float buildTimer = 0;
+    private string lastTarget;
     
     //MonoBehavior
 
@@ -67,6 +69,7 @@ public class Player : MonoBehaviour
         if (Input.GetKeyDown("c")) ToggleArchitect();
         if (Input.GetKeyDown("r")) ToggleReplace();
         if (Input.GetKeyDown("escape")) ToggleMenu();
+        if (Input.GetKeyDown("m")) ToggleExtendMatching();
         for (int i = 1; i <= 5; i++) if (Input.GetKeyDown(i + "")) hotbar.Select(i-1); 
 
         
@@ -117,9 +120,9 @@ public class Player : MonoBehaviour
         if (selected == null) return;
         if (!Timer(.5f)) return;
         Vector3Int target = TargetAir();
-
         if (target == Vector3Int.RoundToInt(Direction(Vector3.forward, 2)) && !airTargetMode) return;
 
+        lastTarget = World.Get(TargetBlock()).name;
         Block block = selected.Use(target);
         if (block)
         {
@@ -136,6 +139,7 @@ public class Player : MonoBehaviour
         if (!Timer(.5f)) return;
         Vector3Int target = TargetBlock();
         if (World.Empty(target)) return;
+        lastTarget = World.Get(target).name;
 
         history.Push(new List<BlockSave>());
 
@@ -156,6 +160,7 @@ public class Player : MonoBehaviour
         Vector3Int target = TargetBlock();
         if (World.Empty(target)) return;
         history.Push(new List<BlockSave>());
+        lastTarget = World.Get(target).name;
 
         if(extendMode)
         {
@@ -259,6 +264,7 @@ public class Player : MonoBehaviour
 
             if (World.Empty(target)) continue;
             if (prev.Contains(target)) continue;
+            if (extendMatching && World.Get(target).name != lastTarget) continue;
             ExtendReplace(direction, target, prev);
         }
     }
@@ -275,6 +281,7 @@ public class Player : MonoBehaviour
 
             if (!World.Empty(target)) continue;
             if (World.Empty(target + direction)) continue;
+            if (extendMatching && World.Get(target + direction).name != lastTarget) continue;
 
             Block block = selected.Use(target);
             if(block) history.Peek().Add(new BlockSave(block, "build"));
@@ -295,6 +302,8 @@ public class Player : MonoBehaviour
             if (direction.z != 0 && target.z != position.z) continue;
 
             if (World.Empty(target)) continue;
+            if (extendMatching && World.Get(target).name != lastTarget) continue;
+
             ExtendDelete(direction, target);
         }
     }
@@ -325,6 +334,11 @@ public class Player : MonoBehaviour
     }
 
     //Public
+
+    public void ToggleExtendMatching()
+    {
+        extendMatching = !extendMatching;
+    }
 
     public void ToggleReplace()
     {
