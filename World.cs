@@ -37,20 +37,31 @@ public class World : MonoBehaviour
             save.Add(block.Key, block.Value.gameObject.name);
         }
         string json = JsonUtility.ToJson(save);
-        string path = Application.persistentDataPath + "Save.json";
+        string path = Application.persistentDataPath + "/Save.json";
         File.WriteAllText(path, json);
     }
 
     private void Load()
     {
-        string path = Application.persistentDataPath + "Save.json";
-        string json = File.ReadAllText(path);
-
-        SaveFile save = JsonUtility.FromJson<SaveFile>(json);
+        string path = Application.persistentDataPath + "/Save.json";
+        SaveFile save = null;
+        if (File.Exists(path))
+        {
+            string json = File.ReadAllText(path);
+            save = JsonUtility.FromJson<SaveFile>(json);
+        }
+        if(save == null || save.world.Count == 0) save = DefaultSave();
         foreach(BlockSave blocksave in save.world)
         {
             Create(blocksave);
         }
+    }
+
+    private SaveFile DefaultSave()
+    {
+        string path = Application.dataPath + "/Resources/Data/DefaultSave.json";
+        string json = File.ReadAllText(path);
+        return JsonUtility.FromJson<SaveFile>(json);
     }
 
     //Public

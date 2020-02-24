@@ -21,7 +21,7 @@ public class Player : MonoBehaviour
     private Stack<List<BlockSave>> history;
     private GameObject menu;
     private float buildTimer = 0;
-    private string lastTarget;
+    private Block lastTarget;
     
     //MonoBehavior
 
@@ -122,7 +122,7 @@ public class Player : MonoBehaviour
         Vector3Int target = TargetAir();
         if (target == Vector3Int.RoundToInt(Direction(Vector3.forward, 2)) && !airTargetMode) return;
 
-        lastTarget = World.Get(TargetBlock()).name;
+        lastTarget = World.Get(TargetBlock());
         Block block = selected.Use(target);
         if (block)
         {
@@ -139,7 +139,7 @@ public class Player : MonoBehaviour
         if (!Timer(.5f)) return;
         Vector3Int target = TargetBlock();
         if (World.Empty(target)) return;
-        lastTarget = World.Get(target).name;
+        lastTarget = World.Get(target);
 
         history.Push(new List<BlockSave>());
 
@@ -160,7 +160,7 @@ public class Player : MonoBehaviour
         Vector3Int target = TargetBlock();
         if (World.Empty(target)) return;
         history.Push(new List<BlockSave>());
-        lastTarget = World.Get(target).name;
+        lastTarget = World.Get(target);
 
         if(extendMode)
         {
@@ -264,7 +264,7 @@ public class Player : MonoBehaviour
 
             if (World.Empty(target)) continue;
             if (prev.Contains(target)) continue;
-            if (extendMatching && World.Get(target).name != lastTarget) continue;
+            if (extendMatching && lastTarget && World.Get(target).name != lastTarget.name) continue;
             ExtendReplace(direction, target, prev);
         }
     }
@@ -281,7 +281,7 @@ public class Player : MonoBehaviour
 
             if (!World.Empty(target)) continue;
             if (World.Empty(target + direction)) continue;
-            if (extendMatching && World.Get(target + direction).name != lastTarget) continue;
+            if (extendMatching && lastTarget && World.Get(target + direction).name != lastTarget.name) continue;
 
             Block block = selected.Use(target);
             if(block) history.Peek().Add(new BlockSave(block, "build"));
@@ -302,7 +302,7 @@ public class Player : MonoBehaviour
             if (direction.z != 0 && target.z != position.z) continue;
 
             if (World.Empty(target)) continue;
-            if (extendMatching && World.Get(target).name != lastTarget) continue;
+            if (extendMatching && lastTarget && World.Get(target).name != lastTarget.name) continue;
 
             ExtendDelete(direction, target);
         }
