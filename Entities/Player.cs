@@ -68,7 +68,7 @@ public class Player : MonoBehaviour
         if (Input.GetKeyDown("e")) ToggleExtend();
         if (Input.GetKeyDown("c")) ToggleArchitect();
         if (Input.GetKeyDown("r")) ToggleReplace();
-        if (Input.GetKeyDown("escape")) ToggleMenu();
+        if (Input.GetKeyDown("escape")) ToggleMenu("Main Menu");
         if (Input.GetKeyDown("m")) ToggleExtendMatching();
         for (int i = 1; i <= 5; i++) if (Input.GetKeyDown(i + "")) hotbar.Select(i-1); 
 
@@ -366,22 +366,28 @@ public class Player : MonoBehaviour
         }
     }
 
-    public void ToggleMenu()
+    public void ToggleMenu(string target)
     {
-        if (menu.activeSelf)
+        GameObject targetObject = menu.transform.Find(target).gameObject;
+        if (targetObject.activeSelf)
         {
-            menu.SetActive(false);
             Cursor.visible = architectMode;
             if (!architectMode) Cursor.lockState = CursorLockMode.Locked;
             cameraMove = true;
         }
         else
         {
-            menu.SetActive(true);
             Cursor.visible = true;
             cameraMove = false;
             Cursor.lockState = CursorLockMode.None;
         }
+        foreach(Transform child in menu.transform)
+        {
+            if (child.gameObject.name == target) continue;
+            child.gameObject.SetActive(false);
+        }
+        targetObject.SetActive(!targetObject.activeSelf);
+        menu.SetActive(targetObject.activeSelf);
     }
 
     public void Select(Block block)
