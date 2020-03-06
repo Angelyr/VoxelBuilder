@@ -12,6 +12,7 @@ public class UIButton : MonoBehaviour
 
     private void Start()
     {
+        player = References.player;
         if (GetComponent<Button>())
         {
             button = GetComponent<Button>();
@@ -32,7 +33,6 @@ public class UIButton : MonoBehaviour
     }
 
     private void OnClick() {
-        if (player == null) player = References.player;
         if (gameObject.name == "Continue") player.ToggleMenu("Main Menu");
         else if (gameObject.name == "Abilities") player.ToggleMenu("Abilities Menu");
         else if (gameObject.name == "Exit") Application.Quit();
