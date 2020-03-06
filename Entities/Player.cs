@@ -335,14 +335,14 @@ public class Player : MonoBehaviour
 
     //Public
 
-    public void ToggleExtendMatching()
+    public bool ToggleExtendMatching()
     {
-        extendMatching = !extendMatching;
+        return extendMatching = !extendMatching;
     }
 
-    public void ToggleReplace()
+    public bool ToggleReplace()
     {
-        replace = !replace;
+        return replace = !replace;
     }
 
     public void Undo()
@@ -403,23 +403,22 @@ public class Player : MonoBehaviour
         else CameraCanMove();
     }
 
-    public void ToggleAirTarget()
+    public bool ToggleAirTarget()
     {
-        airTargetMode = !airTargetMode;
+        return airTargetMode = !airTargetMode;
     }
 
-    public void ToggleExtend()
+    public bool ToggleExtend()
     {
-        extendMode = !extendMode;
+        return extendMode = !extendMode;
     }
 
-    public void ToggleArchitect()
+    public bool ToggleArchitect()
     {
         architectMode = !architectMode;
-
         if (architectMode) Cursor.lockState = CursorLockMode.None;
         else Cursor.lockState = CursorLockMode.Locked;
-
         Cursor.visible = architectMode;
+        return architectMode;
     }
 }
